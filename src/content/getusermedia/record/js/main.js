@@ -110,6 +110,10 @@ function handleDataAvailable (event) {
 
 
 function startRecording () {
+  if (!MediaRecorder || typeof MediaRecorder !== 'function' || typeof MediaRecorder.isTypeSupported !== 'function') {
+    errorMsgElement.innerHTML += `MediaRecorder not available`
+    return
+  }
   recordedBlobs = []
   let supportedMime
   errorMsgElement.innerHTML += `<h3>isTypeSupported results</h3>`
