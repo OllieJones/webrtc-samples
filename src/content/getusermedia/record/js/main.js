@@ -31,12 +31,7 @@ const mimes = [
 
 const dataAvailableInterval = 10
 
-const mediaSource = new MediaSource ()
-mediaSource.addEventListener ('sourceopen', handleSourceOpen, false)
-let mediaRecorder
-let recordedBlobs
-let sourceBuffer
-
+/* console log capture */
 const errorMsgElement = document.querySelector (' #errorMsg')
 const originalConsoleLog = console.log
 console.log = function () {
@@ -52,6 +47,11 @@ console.error = function () {
   const items = JSON.stringify(list)
   errorMsgElement.innerHTML += `error: ${items}<br />`
 }
+
+
+let mediaRecorder
+let recordedBlobs
+let sourceBuffer
 
 const recordedVideo = document.querySelector ('video#recorded')
 const recordButton = document.querySelector ('button#record')
@@ -92,11 +92,6 @@ downloadButton.addEventListener ('click', () => {
   }, 100)
 })
 
-function handleSourceOpen (event) {
-  console.log ('MediaSource opened')
-  sourceBuffer = mediaSource.addSourceBuffer ('video/webm; codecs="vp8"')
-  console.log ('Source buffer: ', sourceBuffer)
-}
 let logCount = 0
 function handleDataAvailable (event) {
   if (event.data && event.data.size > 0) {
