@@ -38,6 +38,21 @@ let recordedBlobs
 let sourceBuffer
 
 const errorMsgElement = document.querySelector (' #errorMsg')
+const originalConsoleLog = console.log
+console.log = function () {
+  originalConsoleLog(arguments)
+  const list = [...arguments]
+  const items = JSON.stringify(list)
+  errorMsgElement.innerHTML += `log: ${items}<br />`
+}
+const originalConsoleError = console.error
+console.error = function () {
+  originalConsoleLog(arguments)
+  const list = [...arguments]
+  const items = JSON.stringify(list)
+  errorMsgElement.innerHTML += `error: ${items}<br />`
+}
+
 const recordedVideo = document.querySelector ('video#recorded')
 const recordButton = document.querySelector ('button#record')
 recordButton.addEventListener ('click', () => {
@@ -82,12 +97,12 @@ function handleSourceOpen (event) {
   sourceBuffer = mediaSource.addSourceBuffer ('video/webm; codecs="vp8"')
   console.log ('Source buffer: ', sourceBuffer)
 }
-
+let logCount = 0
 function handleDataAvailable (event) {
   if (event.data && event.data.size > 0) {
-    const now = event.timecode
+    const now = event.timecode || Date.now()
     const timeStep = event.target.previousTime ? (now - event.target.previousTime).toFixed (1) : ""
-    console.log ('data', event.data.size, timeStep)
+    if (++logCount <= 100) console.log ('data', event.data.size, timeStep)
     recordedBlobs.push (event.data)
     event.target.previousTime = now
   }
