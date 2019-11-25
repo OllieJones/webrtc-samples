@@ -9,141 +9,163 @@
 // This code is adapted from
 // https://rawgit.com/Miguelao/demos/master/mediarecorder.html
 
-'use strict';
+'use strict'
 
 /* globals MediaRecorder */
 
-const mediaSource = new MediaSource();
-mediaSource.addEventListener('sourceopen', handleSourceOpen, false);
-let mediaRecorder;
-let recordedBlobs;
-let sourceBuffer;
+const mimes = [
+  {
+    type: 'video/mp4; codecs="avc1.42E01E"',
+    description: 'mp4 with H.264 Constrained Baseline Profile Level 3; Broadway compatible',
+  },
+  {type: 'video/mp4; codecs="avc1.4D401E"', description: 'mp4 with H.264 Main Profile Level 3'},
+  {type: 'video/mp4; codecs="avc1.64001E"', description: 'mp4 with H.264 High Profile Level 3'},
+  {type: 'video/mp4', description: 'mp4 generic'},
+  {type: 'video/webm; codecs="avc1.42E01E"', description: 'webm with H.264 Constrained Baseline Profile Level 3; Broadway compatible', prio: 0, },
+  {type: 'video/webm; codecs="avc1.4D401E"', description: 'webm with H.264 Main Profile Level 3', prio: 1},
+  {type: 'video/webm; codecs="avc1.64001E"', description: 'webm with H.264 High Profile Level 3', prio: 2},
+  {type: 'video/webm;codecs=vp9', description: 'webm with vp9'},
+  {type: 'video/webm;codecs=vp8', description: 'webm with vp8'},
+  {type: 'video/webm', description: 'webm generic'},
+]
 
-const errorMsgElement = document.querySelector('span#errorMsg');
-const recordedVideo = document.querySelector('video#recorded');
-const recordButton = document.querySelector('button#record');
-recordButton.addEventListener('click', () => {
+const dataAvailableInterval = 10
+
+const mediaSource = new MediaSource ()
+mediaSource.addEventListener ('sourceopen', handleSourceOpen, false)
+let mediaRecorder
+let recordedBlobs
+let sourceBuffer
+
+const errorMsgElement = document.querySelector (' #errorMsg')
+const recordedVideo = document.querySelector ('video#recorded')
+const recordButton = document.querySelector ('button#record')
+recordButton.addEventListener ('click', () => {
   if (recordButton.textContent === 'Start Recording') {
-    startRecording();
+    startRecording ()
   } else {
-    stopRecording();
-    recordButton.textContent = 'Start Recording';
-    playButton.disabled = false;
-    downloadButton.disabled = false;
+    stopRecording ()
+    recordButton.textContent = 'Start Recording'
+    playButton.disabled = false
+    downloadButton.disabled = false
   }
-});
+})
 
-const playButton = document.querySelector('button#play');
-playButton.addEventListener('click', () => {
-  const superBuffer = new Blob(recordedBlobs, {type: 'video/webm'});
-  recordedVideo.src = null;
-  recordedVideo.srcObject = null;
-  recordedVideo.src = window.URL.createObjectURL(superBuffer);
-  recordedVideo.controls = true;
-  recordedVideo.play();
-});
+const playButton = document.querySelector ('button#play')
+playButton.addEventListener ('click', () => {
+  const superBuffer = new Blob (recordedBlobs, {type: 'video/webm'})
+  recordedVideo.src = null
+  recordedVideo.srcObject = null
+  recordedVideo.src = window.URL.createObjectURL (superBuffer)
+  recordedVideo.controls = true
+  recordedVideo.play ()
+})
 
-const downloadButton = document.querySelector('button#download');
-downloadButton.addEventListener('click', () => {
-  const blob = new Blob(recordedBlobs, {type: 'video/webm'});
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.style.display = 'none';
-  a.href = url;
-  a.download = 'test.webm';
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => {
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  }, 100);
-});
+const downloadButton = document.querySelector ('button#download')
+downloadButton.addEventListener ('click', () => {
+  const blob = new Blob (recordedBlobs, {type: 'video/webm'})
+  const url = window.URL.createObjectURL (blob)
+  const a = document.createElement ('a')
+  a.style.display = 'none'
+  a.href = url
+  a.download = 'test.webm'
+  document.body.appendChild (a)
+  a.click ()
+  setTimeout (() => {
+    document.body.removeChild (a)
+    window.URL.revokeObjectURL (url)
+  }, 100)
+})
 
-function handleSourceOpen(event) {
-  console.log('MediaSource opened');
-  sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
-  console.log('Source buffer: ', sourceBuffer);
+function handleSourceOpen (event) {
+  console.log ('MediaSource opened')
+  sourceBuffer = mediaSource.addSourceBuffer ('video/webm; codecs="vp8"')
+  console.log ('Source buffer: ', sourceBuffer)
 }
 
-function handleDataAvailable(event) {
+function handleDataAvailable (event) {
   if (event.data && event.data.size > 0) {
-    recordedBlobs.push(event.data);
+    const now = event.timecode
+    const timeStep = event.target.previousTime ? (now - event.target.previousTime).toFixed (1) : ""
+    console.log ('data', event.data.size, timeStep)
+    recordedBlobs.push (event.data)
+    event.target.previousTime = now
   }
 }
 
-function startRecording() {
-  recordedBlobs = [];
-  let options = {mimeType: 'video/webm;codecs=vp9'};
-  if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-    console.error(`${options.mimeType} is not Supported`);
-    errorMsgElement.innerHTML = `${options.mimeType} is not Supported`;
-    options = {mimeType: 'video/webm;codecs=vp8'};
-    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-      console.error(`${options.mimeType} is not Supported`);
-      errorMsgElement.innerHTML = `${options.mimeType} is not Supported`;
-      options = {mimeType: 'video/webm'};
-      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-        console.error(`${options.mimeType} is not Supported`);
-        errorMsgElement.innerHTML = `${options.mimeType} is not Supported`;
-        options = {mimeType: ''};
-      }
+
+function startRecording () {
+  recordedBlobs = []
+  let supportedMime
+  errorMsgElement.innerHTML += `<h3>isTypeSupported results</h3>`
+  for (let i = 0; i < mimes.length; i++) {
+    const mime = mimes[i]
+    if (MediaRecorder.isTypeSupported (mime.type)) {
+      errorMsgElement.innerHTML += `    Supported: ${mime.type} ${mime.description}<br />`
+      if (!supportedMime || supportedMime.prio < mime.prio) supportedMime = mime
+    } else {
+      errorMsgElement.innerHTML += `Not Supported: ${mime.type} ${mime.description}<br />`
     }
   }
-
+  let options = {mimeType: supportedMime.type}
   try {
-    mediaRecorder = new MediaRecorder(window.stream, options);
+    mediaRecorder = new MediaRecorder (window.stream, options)
   } catch (e) {
-    console.error('Exception while creating MediaRecorder:', e);
-    errorMsgElement.innerHTML = `Exception while creating MediaRecorder: ${JSON.stringify(e)}`;
-    return;
+    console.error ('Exception while creating MediaRecorder:', e)
+    errorMsgElement.innerHTML += `Exception while creating MediaRecorder: ${JSON.stringify (e)}<br />`
+    return
   }
+  errorMsgElement.innerHTML = `Using: ${supportedMime.type} ${supportedMime.description}<br />` + errorMsgElement.innerHTML
 
-  console.log('Created MediaRecorder', mediaRecorder, 'with options', options);
-  recordButton.textContent = 'Stop Recording';
-  playButton.disabled = true;
-  downloadButton.disabled = true;
+  console.log ('Created MediaRecorder', mediaRecorder, 'with options', options)
+  recordButton.textContent = 'Stop Recording'
+  playButton.disabled = true
+  downloadButton.disabled = true
   mediaRecorder.onstop = (event) => {
-    console.log('Recorder stopped: ', event);
-  };
-  mediaRecorder.ondataavailable = handleDataAvailable;
-  mediaRecorder.start(10); // collect 10ms of data
-  console.log('MediaRecorder started', mediaRecorder);
+    console.log ('Recorder stopped: ', event)
+  }
+  mediaRecorder.ondataavailable = handleDataAvailable
+  mediaRecorder.previousTime = null
+  mediaRecorder.start (dataAvailableInterval || 10)
+  console.log ('MediaRecorder started', mediaRecorder)
 }
 
-function stopRecording() {
-  mediaRecorder.stop();
-  console.log('Recorded Blobs: ', recordedBlobs);
+function stopRecording () {
+  mediaRecorder.stop ()
+  console.log (recordedBlobs.length, 'blobs recorded')
 }
 
-function handleSuccess(stream) {
-  recordButton.disabled = false;
-  console.log('getUserMedia() got stream:', stream);
-  window.stream = stream;
+function handleSuccess (stream) {
+  recordButton.disabled = false
+  console.log ('getUserMedia() got stream:', stream)
+  window.stream = stream
 
-  const gumVideo = document.querySelector('video#gum');
-  gumVideo.srcObject = stream;
+  const gumVideo = document.querySelector ('video#gum')
+  gumVideo.srcObject = stream
 }
 
-async function init(constraints) {
+async function init (constraints) {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    handleSuccess(stream);
+    const stream = await navigator.mediaDevices.getUserMedia (constraints)
+    handleSuccess (stream)
   } catch (e) {
-    console.error('navigator.getUserMedia error:', e);
-    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+    console.error ('navigator.getUserMedia error:', e)
+    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString ()}`
   }
 }
 
-document.querySelector('button#start').addEventListener('click', async () => {
-  const hasEchoCancellation = document.querySelector('#echoCancellation').checked;
+document.querySelector ('button#start').addEventListener ('click', async () => {
+  const wantsAudio = document.querySelector ('#wantsAudio').checked
+  const hasEchoCancellation = document.querySelector ('#echoCancellation').checked
   const constraints = {
-    audio: {
-      echoCancellation: {exact: hasEchoCancellation}
-    },
     video: {
-      width: 1280, height: 720
-    }
-  };
-  console.log('Using media constraints:', constraints);
-  await init(constraints);
-});
+      width: 640, height: 480,
+    },
+  }
+  if (wantsAudio) constraints.audio = {
+    echoCancellation: {exact: hasEchoCancellation},
+  }
+
+  console.log ('Using media constraints:', constraints)
+  await init (constraints)
+})

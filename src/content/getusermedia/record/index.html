@@ -52,11 +52,12 @@
 
     <div>
         <h4>Media Stream Constraints options</h4>
+        <p>Record audio: <input type="checkbox" id="wantsAudio"></p>
         <p>Echo cancellation: <input type="checkbox" id="echoCancellation"></p>
     </div>
 
     <div>
-        <span id="errorMsg"></span>
+        <div id="errorMsg"></div>
     </div>
 
     <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/record"
@@ -67,7 +68,6 @@
 <!-- include adapter for srcObject shim -->
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="js/main.js" async></script>
-<script src="../../../js/lib/ga.js"></script>
 
 </body>
 </html>

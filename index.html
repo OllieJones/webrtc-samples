@@ -18,7 +18,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta id="theme-color" name="theme-color" content="#ffffff">
 
-    <base target="_blank">
+    <base target="_blank" rel="noopener">
 
     <title>WebRTC samples</title>
 
@@ -53,15 +53,20 @@
 <body>
 <div id="container">
 
-    <h1>WebRTC samples</h1>
+    <div style="width: 100%; overflow: hidden;">
+        <div style="width: 128px; float: left;" id="qrcode"></div>
+        <div style="margin-left: 128px;">
+            <h1>WebRTC Samples</h1>
+            <p>
+                This is the Glance fork of a collection of small samples demonstrating various parts of the <a
+                href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API">WebRTC APIs</a>. The code for all
+                samples are available in the <a href="https://github.com/OllieJones/webrtc-samples">GitHub repository</a>.
+            </p>
+        </div>
+    </div>
 
     <section>
 
-        <p>
-            This is a collection of small samples demonstrating various parts of the <a
-                href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API">WebRTC APIs</a>. The code for all
-            samples are available in the <a href="https://github.com/webrtc/samples">GitHub repository</a>.
-        </p>
 
         <p>Most of the samples use <a href="https://github.com/webrtc/adapter">adapter.js</a>, a shim to insulate apps
             from spec changes and prefix differences.</p>
@@ -191,7 +196,18 @@
 
 </div>
 
-<script src="src/js/lib/ga.js"></script>
+<script src="src/js/qrcode.js"></script>
+
+<script>
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        text:  document.URL,
+        width: 96,
+        height: 96,
+        colorDark : "#000040",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.L
+    });
+</script>
 
 </body>
 </html>
