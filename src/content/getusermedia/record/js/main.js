@@ -164,18 +164,20 @@ async function init (constraints) {
     const stream = await navigator.mediaDevices.getUserMedia (constraints)
     handleSuccess (stream)
   } catch (e) {
-    console.error ('navigator.getUserMedia error:', e)
-    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString ()}`
+    console.error ('navigator.getUserMedia error:', e, constraints)
   }
 }
 
 document.querySelector ('button#start').addEventListener ('click', async () => {
   const wantsAudio = document.querySelector ('#wantsAudio').checked
   const hasEchoCancellation = document.querySelector ('#echoCancellation').checked
-  const constraints = {
+  let constraints = {
     video: {
       width: 640, height: 480,
     },
+  }
+  constraints = {
+    video: true
   }
   if (wantsAudio) constraints.audio = {
     echoCancellation: {exact: hasEchoCancellation},

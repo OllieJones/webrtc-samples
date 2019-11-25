@@ -32,9 +32,14 @@
 <body>
 
 <div id="container">
-
-    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a>
-        <span>MediaRecorder</span></h1>
+    <div style="width: 100%; overflow: hidden;">
+        <div style="width: 128px; float: left;" id="qrcode"></div>
+        <div style="margin-left: 128px;">
+            <h1><a href='/samples/' title='WebRTC samples homepage' rel='noopener'>WebRTC Samples</a>
+                <span>MediaRecorder</span>
+            </h1>
+        </div>
+    </div>
 
     <p>For more information see the MediaStream Recording API <a
             href="http://w3c.github.io/mediacapture-record/MediaRecorder.html"
@@ -68,6 +73,21 @@
 <!-- include adapter for srcObject shim -->
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="js/main.js" async></script>
+
+<script src="/src/js/qrcode.js"></script>
+
+<script>
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        text:  document.URL,
+        width: 96,
+        height: 96,
+        colorDark : "#000040",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.L
+    });
+</script>
+
+
 
 </body>
 </html>
