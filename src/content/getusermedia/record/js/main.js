@@ -38,13 +38,26 @@ const dataAvailableInterval = 10
 
 window.addEventListener ('load', function (event) {
 
-  if (!navigator || !navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
-    console.error ('getUserMedia', 'not available in this browser')
+  try {
+    if (!navigator || !navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+      console.error ('getUserMedia', 'not available in this browser')
+      return
+    }
+  }
+  catch (exception) {
+    console.error ('getUserMedia', exception.toString())
     return
   }
-  if (!MediaRecorder || typeof MediaRecorder !== 'function' || typeof MediaRecorder.isTypeSupported !== 'function') {
-    console.error ('MediaRecorder', 'not available in this browser')
+  try {
+    if (!MediaRecorder || typeof MediaRecorder !== 'function' || typeof MediaRecorder.isTypeSupported !== 'function') {
+      console.error ('MediaRecorder', 'not available in this browser')
+      return
+    }
+  }
+  catch (exception) {
+    console.error ('MediaRecorder', exception.toString())
     return
+
   }
 
 
@@ -94,9 +107,14 @@ window.addEventListener ('load', function (event) {
 
   function handleDataAvailable (event) {
     if (event.data && event.data.size > 0) {
+      event.target.dataAvailableCount ++
       const now = event.timecode || Date.now ()
-      const timeStep = event.target.previousTime ? (now - event.target.previousTime).toFixed (1) : ""
-      if (++logCount <= 100) logALine ('datahandler', event.data.size, timeStep)
+      const timeStep = event.target.previousTime ? (now - event.target.previousTime).toFixed (1) : ''
+      const timeElapsed = now - event.target.startTime
+      if (event.target.dataAvailableCount <= 10) {
+        if (timeStep > 10 * event.target.intervalTime) console.error('datahandler', 'long interval', timeStep)
+        logALine ('datahandler', event.data.size, timeStep)
+      }
       recordedBlobs.push (event.data)
       event.target.previousTime = now
     }
@@ -131,7 +149,10 @@ window.addEventListener ('load', function (event) {
     }
     mediaRecorder.ondataavailable = handleDataAvailable
     mediaRecorder.previousTime = null
+    mediaRecorder.startTime = Date.now()
     const interval = dataAvailableInterval || 10
+    mediaRecorder.intervalTime = interval
+    mediaRecorder.dataAvailableCount = 0
     mediaRecorder.start (interval)
     console.log ('MediaRecorder interval', interval)
   }
@@ -198,7 +219,10 @@ function logALine (...vals) {
   let items = []
   for (let i = 0; i < vals.length; i++) {
     const val = vals[i]
-    const item = typeof val === 'string' ? val : JSON.stringify (val)
+    let item
+    if (typeof val === 'string') item = val
+    else if (val.name && val.message && typeof val.message === 'string') item = `${val.name}: ${val.message}`
+    else item = JSON.stringify (val)
     items.push (item)
   }
   const row = document.createElement ('tr')
