@@ -35,41 +35,39 @@ const mimes = [
 ]
 
 const dataAvailableInterval = 10
+let useRequestDataMethod = true
 
-const dudMimeTypes = new Set()
+const dudMimeTypes = new Set ()
 
-window.addEventListener ('load', function (event) {
+window.addEventListener ('load', function () {
 
   try {
     if (!navigator || !navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
       console.error ('getUserMedia', 'not available in this browser')
       return
     }
-  }
-  catch (exception) {
-    console.error ('getUserMedia', exception.toString())
+  } catch (exception) {
+    console.error ('getUserMedia', exception.toString ())
     return
   }
   try {
-    if (!MediaRecorder || typeof MediaRecorder !== 'function' ) {
+    if (!MediaRecorder || typeof MediaRecorder !== 'function') {
       console.error ('MediaRecorder', 'not available in this browser')
       return
     }
-  }
-  catch (exception) {
-    console.error ('MediaRecorder', exception.toString())
+  } catch (exception) {
+    console.error ('MediaRecorder', exception.toString ())
     return
   }
   try {
     if (typeof MediaRecorder.isTypeSupported !== 'function') {
       console.error ('.isTypeSupported', 'not available in this browser, polyfilling')
       MediaRecorder.isTypeSupported = function (mime) {
-        return !dudMimeTypes.has (mime);
+        return !dudMimeTypes.has (mime)
       }
     }
-  }
-  catch (exception) {
-    console.error ('.isTypeSupported', exception.toString())
+  } catch (exception) {
+    console.error ('.isTypeSupported', exception.toString ())
     return
   }
 
@@ -116,20 +114,19 @@ window.addEventListener ('load', function (event) {
     }, 100)
   })
 
-  let logCount = 0
-
   function handleDataAvailable (event) {
     if (event.data && event.data.size > 0) {
-      event.target.dataAvailableCount ++
+      event.target.dataAvailableCount++
       const now = event.timecode || Date.now ()
-      const timeStep = event.target.previousTime ? (now - event.target.previousTime).toFixed (1) : ''
-      const timeElapsed = now - event.target.startTime
+      const previous = event.target.previousTime || event.target.startTime
+      const timeStep = (now - previous).toFixed (1)
       if (event.target.dataAvailableCount <= 10) {
-        if (timeStep > 10 * event.target.intervalTime) console.error('datahandler', 'long interval', timeStep)
+        if (timeStep > 10 * event.target.intervalTime) console.error ('datahandler', 'long interval', timeStep)
         logALine ('datahandler', event.data.size, timeStep)
       }
       recordedBlobs.push (event.data)
       event.target.previousTime = now
+      if (useRequestDataMethod) event.target.doRequestData (event.target.intervalTime)
     }
   }
 
@@ -151,10 +148,21 @@ window.addEventListener ('load', function (event) {
       mediaRecorder = new MediaRecorder (window.stream, options)
     } catch (e) {
       console.error ('Exception while creating MediaRecorder:', e)
-      dudMimeTypes.add(options.mimeType)
+      dudMimeTypes.add (options.mimeType)
       return
     }
     logALine ('success', 'MediaRecorder', options)
+
+    try {
+      if (typeof mediaRecorder.requestData !== 'function') {
+        console.error ('.requestData', 'not available in this browser')
+        useRequestDataMethod = false
+      }
+    } catch (exception) {
+      console.error ('.requestData', exception.toString ())
+      useRequestDataMethod = false
+    }
+
     recordButton.textContent = 'Stop Recording'
     playButton.disabled = true
     downloadButton.disabled = true
@@ -163,11 +171,26 @@ window.addEventListener ('load', function (event) {
     }
     mediaRecorder.ondataavailable = handleDataAvailable
     mediaRecorder.previousTime = null
-    mediaRecorder.startTime = Date.now()
+    mediaRecorder.startTime = Date.now ()
     const interval = dataAvailableInterval || 10
     mediaRecorder.intervalTime = interval
     mediaRecorder.dataAvailableCount = 0
-    mediaRecorder.start (interval)
+    if (useRequestDataMethod) mediaRecorder.start()
+    else mediaRecorder.start (interval)
+
+    mediaRecorder.doRequestData = function (interval) {
+      if (typeof mediaRecorder.requestData === 'function') {
+        if (mediaRecorder.requestDataTimeout) window.clearTimeout (mediaRecorder.requestDataTimeout)
+        mediaRecorder.requestDataTimeout = window.setTimeout (function () {
+          if (mediaRecorder.state === 'recording' ) {
+            mediaRecorder.requestData ()
+            mediaRecorder.requestDataTimeout = null
+            mediaRecorder.doRequestData (interval)
+          }
+        }, interval)
+      }
+    }
+    if (useRequestDataMethod) mediaRecorder.doRequestData (interval)
     console.log ('MediaRecorder interval', interval)
   }
 
