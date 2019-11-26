@@ -36,6 +36,8 @@ const mimes = [
 
 const dataAvailableInterval = 10
 
+const dudMimeTypes = new Set()
+
 window.addEventListener ('load', function (event) {
 
   try {
@@ -49,7 +51,7 @@ window.addEventListener ('load', function (event) {
     return
   }
   try {
-    if (!MediaRecorder || typeof MediaRecorder !== 'function' || typeof MediaRecorder.isTypeSupported !== 'function') {
+    if (!MediaRecorder || typeof MediaRecorder !== 'function' ) {
       console.error ('MediaRecorder', 'not available in this browser')
       return
     }
@@ -57,7 +59,18 @@ window.addEventListener ('load', function (event) {
   catch (exception) {
     console.error ('MediaRecorder', exception.toString())
     return
-
+  }
+  try {
+    if (typeof MediaRecorder.isTypeSupported !== 'function') {
+      console.error ('.isTypeSupported', 'not available in this browser, polyfilling')
+      MediaRecorder.isTypeSupported = function (mime) {
+        return !dudMimeTypes.contains (mime);
+      }
+    }
+  }
+  catch (exception) {
+    console.error ('.isTypeSupported', exception.toString())
+    return
   }
 
 
@@ -138,6 +151,7 @@ window.addEventListener ('load', function (event) {
       mediaRecorder = new MediaRecorder (window.stream, options)
     } catch (e) {
       console.error ('Exception while creating MediaRecorder:', e)
+      dudMimeTypes.add(options.mimeType)
       return
     }
     logALine ('success', 'MediaRecorder', options)
