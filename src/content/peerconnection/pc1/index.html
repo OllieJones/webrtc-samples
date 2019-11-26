@@ -32,8 +32,14 @@
 <body>
 
 <div id="container">
-    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a>
-        <span>Peer connection</span></h1>
+    <div style="width: 100%; overflow: hidden;">
+        <a href='#' target="_self"><div style="width: 128px; float: left;" id="qrcode"></div></a>
+        <div style="margin-left: 128px;">
+            <h1><a href='../../../../' title='WebRTC samples homepage' rel='noopener'>WebRTC Samples</a>
+                <span>Peer connection</span>
+            </h1>
+        </div>
+    </div>
 
     <p>This sample shows how to setup a connection between two peers using
         <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection">RTCPeerConnection</a>.
@@ -68,7 +74,7 @@
         Started With WebRTC</a>.</p>
 
 
-    <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/peerconnection/pc1"
+    <a href="https://github.com/OllieJones/webrtc-samples/tree/gh-pages/src/content/peerconnection/pc1"
        title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
 
 </div>
@@ -76,6 +82,18 @@
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="js/main.js" async></script>
 
-<script src="../../../js/lib/ga.js"></script>
+<script src="../../../js/qrcode.js"></script>
+
+<script>
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        text:  document.URL,
+        width: 96,
+        height: 96,
+        colorDark : "#000040",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.L
+    });
+</script>
+
 </body>
 </html>
