@@ -33,10 +33,10 @@
 
 <div id="container">
     <div style="width: 100%; overflow: hidden;">
-        <div style="width: 128px; float: left;" id="qrcode"></div>
+        <a href='#' alt='Link to this page'><div style="width: 128px; float: left;" id="qrcode"></div></a>
         <div style="margin-left: 128px;">
             <h1><a href='../../../../' title='WebRTC samples homepage' rel='noopener'>WebRTC Samples</a>
-                <span>MediaRecorder</span>
+                <span>MediaRecorder with getUserMedia</span>
             </h1>
         </div>
     </div>
@@ -46,7 +46,7 @@
             title="W3C MediaStream Recording API Editor's Draft">Editor's&nbsp;Draft</a>.</p>
 
     <video id="gum" playsinline autoplay muted></video>
-    <video id="recorded" playsinline loop></video>
+    <video id="recorded" playsinline></video>
 
     <div>
         <button id="start">Start camera</button>
@@ -61,8 +61,11 @@
             Echo cancellation: <input type="checkbox" id="echoCancellation"></p>
     </div>
 
+    <div id="errorMsg"></div>
     <div>
-        <div id="errorMsg"></div>
+        <table id="log">
+
+        </table>
     </div>
 
     <a href="https://github.com/olliejones/webrtc-samples/tree/gh-pages/src/content/getusermedia/record"
