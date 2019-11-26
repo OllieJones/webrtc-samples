@@ -64,7 +64,7 @@ window.addEventListener ('load', function (event) {
     if (typeof MediaRecorder.isTypeSupported !== 'function') {
       console.error ('.isTypeSupported', 'not available in this browser, polyfilling')
       MediaRecorder.isTypeSupported = function (mime) {
-        return !dudMimeTypes.contains (mime);
+        return !dudMimeTypes.has (mime);
       }
     }
   }
