@@ -122,7 +122,7 @@ window.addEventListener ('load', function () {
       const timeStep = (now - previous).toFixed (1)
       if (event.target.dataAvailableCount <= 10) {
         if (timeStep > 10 * event.target.intervalTime) console.error ('datahandler', 'long interval', timeStep)
-        logALine ('datahandler', event.data.size, timeStep)
+        console.logALine ('datahandler', event.data.size, timeStep)
       }
       recordedBlobs.push (event.data)
       event.target.previousTime = now
@@ -136,10 +136,10 @@ window.addEventListener ('load', function () {
     for (let i = 0; i < mimes.length; i++) {
       const mime = mimes[i]
       if (MediaRecorder.isTypeSupported (mime.type)) {
-        logALine ('supported', mime.type, mime.description)
+        console.logALine ('supported', mime.type, mime.description)
         if (!supportedMime || supportedMime.prio < mime.prio) supportedMime = mime
       } else {
-        logALine ('unsupported', mime.type, mime.description)
+        console.logALine ('unsupported', mime.type, mime.description)
       }
     }
     logALine ('using', supportedMime.type, supportedMime.description)
@@ -151,7 +151,7 @@ window.addEventListener ('load', function () {
       dudMimeTypes.add (options.mimeType)
       return
     }
-    logALine ('success', 'MediaRecorder', options)
+    console.logALine ('success', 'MediaRecorder', options)
 
     try {
       if (typeof mediaRecorder.requestData !== 'function') {
@@ -237,40 +237,4 @@ window.addEventListener ('load', function () {
   })
 
 })
-/* console log capture */
-const errorMsgElement = document.querySelector (' #errorMsg')
-const originalConsoleLog = console.log
-console.log = function () {
-  originalConsoleLog (arguments)
-  logALine ('log', ...arguments)
-}
-const originalConsoleError = console.error
-console.error = function () {
-  originalConsoleLog (arguments)
-  logALine ('error', ...arguments)
-}
-
-const logTable = document.querySelector ("table#log")
-
-function logALine (...vals) {
-  let items = []
-  for (let i = 0; i < vals.length; i++) {
-    const val = vals[i]
-    let item
-    if (typeof val === 'string') item = val
-    else if (val.name && val.message && typeof val.message === 'string') item = `${val.name}: ${val.message}`
-    else item = JSON.stringify (val)
-    items.push (item)
-  }
-  const row = document.createElement ('tr')
-  for (let i = 0; i < items.length; i++) {
-    const col = document.createElement ('td')
-    const span = document.createElement ('span')
-    span.textContent = items[i]
-    col.appendChild (span)
-    row.appendChild (col)
-  }
-  logTable.appendChild (row)
-}
-
 

@@ -45,7 +45,7 @@ let pc1;
 let remoteStream;
 let pc2;
 const offerOptions = {
-  offerToReceiveAudio: 1,
+  offerToReceiveAudio: 0,
   offerToReceiveVideo: 1
 };
 
@@ -60,9 +60,10 @@ function getOtherPc(pc) {
 async function start() {
   console.log('Requesting local stream');
   startButton.disabled = true;
+  const constraints = {audio: false, video: true};
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    console.log('Received local stream');
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    console.log('Created local stream');
     localVideo.srcObject = stream;
     localStream = stream;
     callButton.disabled = false;
@@ -83,12 +84,15 @@ async function call() {
   console.log('Starting call');
   startTime = window.performance.now();
   const videoTracks = localStream.getVideoTracks();
-  const audioTracks = localStream.getAudioTracks();
   if (videoTracks.length > 0) {
     console.log(`Using video device: ${videoTracks[0].label}`);
   }
+  const audioTracks = localStream.getAudioTracks();
   if (audioTracks.length > 0) {
     console.log(`Using audio device: ${audioTracks[0].label}`);
+  }
+  else {
+    console.log (`Not using audio`)
   }
   const configuration = getSelectedSdpSemantics();
   console.log('RTCPeerConnection configuration:', configuration);

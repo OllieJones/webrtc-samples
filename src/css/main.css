@@ -236,6 +236,16 @@ ul {
   margin: 0 0 0.5em 0;
 }
 
+table#log tr {
+  font-family: monospace;
+  font-weight: 300;
+  font-size: 90%;
+}
+table#log tr > td {
+  max-width: 50em;
+  min-width: 4em;
+}
+
 @media screen and (max-width: 650px) {
   .highlight {
     font-size: 1em;

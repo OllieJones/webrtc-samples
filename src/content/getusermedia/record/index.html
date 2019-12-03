@@ -32,21 +32,16 @@
 <body>
 
 <div id="container">
-    <div style="width: 100%; overflow: hidden;">
-        <a href='#' target="_self"><div style="width: 128px; float: left;" id="qrcode"></div></a>
-        <div style="margin-left: 128px;">
-            <h1><a href='../../../../' title='WebRTC samples homepage' rel='noopener'>WebRTC Samples</a>
-                <span>MediaRecorder with getUserMedia</span>
-            </h1>
-        </div>
-    </div>
+
+    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a>
+        <span>MediaRecorder</span></h1>
 
     <p>For more information see the MediaStream Recording API <a
             href="http://w3c.github.io/mediacapture-record/MediaRecorder.html"
             title="W3C MediaStream Recording API Editor's Draft">Editor's&nbsp;Draft</a>.</p>
 
     <video id="gum" playsinline autoplay muted></video>
-    <video id="recorded" playsinline></video>
+    <video id="recorded" playsinline loop></video>
 
     <div>
         <button id="start">Start camera</button>
@@ -56,43 +51,23 @@
     </div>
 
     <div>
-        <p>
-            Record audio: <input type="checkbox" id="wantsAudio"><br/>
-            Echo cancellation: <input type="checkbox" id="echoCancellation"></p>
+        <h4>Media Stream Constraints options</h4>
+        <p>Echo cancellation: <input type="checkbox" id="echoCancellation"></p>
     </div>
 
-    <div id="errorMsg"></div>
     <div>
-        <table id="log">
-
-        </table>
+        <span id="errorMsg"></span>
     </div>
 
-    <a href="https://github.com/olliejones/webrtc-samples/tree/gh-pages/src/content/getusermedia/record"
+    <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/record"
        title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
 
 </div>
 
-<script src="../../../js/logCapture.js"></script>
-
 <!-- include adapter for srcObject shim -->
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="js/main.js" async></script>
-
-<script src="../../../js/third_party/qrcode.js"></script>
-
-<script>
-    var qrcode = new QRCode(document.getElementById("qrcode"), {
-        text:  document.URL,
-        width: 96,
-        height: 96,
-        colorDark : "#000040",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.L
-    });
-</script>
-
-
+<script src="../../../js/lib/ga.js"></script>
 
 </body>
 </html>
