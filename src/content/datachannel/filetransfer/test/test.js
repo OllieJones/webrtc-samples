@@ -11,7 +11,7 @@ export default {
     const path = '/src/content/datachannel/filetransfer/index.html';
     const url = 'file://' + process.cwd() + path;
 
-    // Disable this until https://github.com/webrtc/samples/pull/1110 is merged
+    // Disable this until https://github.com/olliejones/webrtc-samples/pull/1110 is merged
     if (browser.options.desiredCapabilities.browserName === 'safari') {
       browser.end();
       return;

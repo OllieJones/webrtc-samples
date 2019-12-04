@@ -72,10 +72,17 @@ async function start() {
   }
 }
 
+function getSelectedItem(item) {
+  const selected = document.querySelector(item);
+  const option = selected.options[selected.selectedIndex];
+  return option.value === '' ? {} : {selected: option.value};
+}
+
 function getSelectedSdpSemantics() {
-  const sdpSemanticsSelect = document.querySelector('#sdpSemantics');
-  const option = sdpSemanticsSelect.options[sdpSemanticsSelect.selectedIndex];
-  return option.value === '' ? {} : {sdpSemantics: option.value};
+  return getSelectedItem('#sdpSemantics')
+}
+function getSelectedCodec() {
+  return getSelectedItem('#codecChoice')
 }
 
 async function call() {

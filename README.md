@@ -2,7 +2,7 @@
 
 This is a repository for the WebRTC JavaScript code samples, forked from [webrtc/samples](https://gitlab.com/webrtc/samples). All of the samples can be tested from [olliejones.github.io/webrtc-samples](https://olliejones.github.io/webrtc-samples).
 
-We welcome contributions and bugfixes. Please see [CONTRIBUTING.md](https://github.com/webrtc/samples/blob/gh-pages/CONTRIBUTING.md) for details.
+We welcome contributions and bugfixes. Please see [CONTRIBUTING.md](https://github.com/olliejones/webrtc-samples/blob/gh-pages/CONTRIBUTING.md) for details.
 
 ## Testing
 

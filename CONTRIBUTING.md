@@ -7,7 +7,7 @@ Please complete the agreement for an [individual](https://developers.google.com/
 a [corporation](https://developers.google.com/open-source/cla/corporate) as appropriate.
 
 If you plan to add a new sample or make significant changes to an existing sample, we recommend that you start by creating
-a [new issue](https://github.com/webrtc/samples/issues/new) where we can discuss the details.
+a [new issue](https://github.com/olliejones/webrtc-samples/issues/new) where we can discuss the details.
 
 When creating a new sample or updating an existing one, please make sure you also create, or update any existing, tests.
 All tests in this repository are implemented as Nightwatch.JS UI tests, so please follow the same design in your own.
