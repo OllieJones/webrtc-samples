@@ -2,12 +2,12 @@
 const errorMsgElement = document.querySelector (' #errorMsg')
 console.originalLog = console.log
 console.log = function () {
-  console.originalLog (arguments)
+  console.originalLog (...arguments)
   console.logALine ('log', ...arguments)
 }
 console.originalError = console.error
 console.error = function () {
-  console.originalError (arguments)
+  console.originalError (...arguments)
   console.logALine ('error', ...arguments)
 }
 
@@ -15,7 +15,7 @@ const logTable = document.querySelector ("table#log")
 
 function mkSpan (text) {
   const span = document.createElement ('span')
-  span.textContent = text
+  span.textContent = text.replace(/ /g,'\u00a0')
   return span
 }
 

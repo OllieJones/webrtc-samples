@@ -130,7 +130,8 @@ function onCreateSessionDescriptionError(error) {
 }
 
 async function onCreateOfferSuccess(desc) {
-  console.log(`Offer from pc1\n${desc.sdp}`);
+  const parsedSdp = sdpTransform.parse (desc.sdp)
+  console.log(`Offer from pc1\n${JSON.stringify(parsedSdp,null,2)}`);
   console.log('pc1 setLocalDescription start');
   try {
     await pc1.setLocalDescription(desc);
@@ -163,7 +164,7 @@ function onSetLocalSuccess(pc) {
   console.log(`${getName(pc)} setLocalDescription complete`);
 }
 
-function onSetRemoteSuccess(pc) {
+  function onSetRemoteSuccess(pc) {
   console.log(`${getName(pc)} setRemoteDescription complete`);
 }
 
