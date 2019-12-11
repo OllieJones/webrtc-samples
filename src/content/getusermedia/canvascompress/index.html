@@ -6,7 +6,7 @@
  *  that can be found in the LICENSE file in the root of the source
  *  tree.
 -->
-<html>
+<html lang="en">
 <head>
 
     <meta charset="utf-8">
@@ -44,9 +44,10 @@
 
     <video playsinline autoplay></video>
     <button>Take snapshot</button>
-    <canvas></canvas>
+    <canvas id="target" class="video_canvas"></canvas>
 
-    <p>Draw a frame from the video onto the canvas element using the <code>drawImage()</code> method.</p>
+    <p>Draw a frame from the video onto the canvas element using the <code>drawImage()</code> method,
+        then convert it to a compressed image with .toDataURL and .toBlob.</p>
 
     <p>The variables <code>canvas</code>, <code>video</code> and <code>stream</code> are in global scope, so you can
         inspect them from the console.</p>
